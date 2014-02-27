@@ -1,0 +1,20 @@
+sitemap SmartGrid label="Smart Grid View"
+{
+	Frame {
+		Group item=gFF label="First Floor" icon="firstfloor"
+		Group item=gGF label="Ground Floor" icon="groundfloor"
+		Group item=gC label="Cellar" icon="cellar"	
+		Group item=Outdoor icon="garden" 
+		}
+	Frame label="Overall" {
+		Group item=gAppliance
+		Group item=gPowerMeter
+		Group item=gPowerSupply
+		Group item=gSmartGrid
+		Group item=gEPDU
+	    Text item=Consumption
+	}
+	Frame label="Date" {
+		Text item=Date
+	}
+}

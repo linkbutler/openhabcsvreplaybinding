@@ -1,0 +1,26 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+
+var Number counter = 1
+var Timer timer = null
+
+/**
+ * The following rules help initializing the demo items with some helpful states.
+ */
+
+rule "Set random MQTT Temperature"
+when 
+	System started
+then
+	postUpdate(House3, "Initialized String 3")
+	postUpdate(House4, "Initialized String 4")
+end
+
+/*rule "Send to MQTT Broker"
+when 
+	Item House1 changed
+then
+	postUpdate(House1MQTT, House1.getState())
+end*/
+

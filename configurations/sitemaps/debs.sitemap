@@ -1,0 +1,48 @@
+sitemap debs label="Main Menu"
+{
+	Frame label="Houses Simulation" {
+		Frame label="House 1" {
+			Text item=House1
+			Switch item=House1Switch
+		}
+		Frame label="House 2" {
+			Text item=House2
+			Switch item=House2Switch
+		}
+		Frame label="House 3" {
+			Text item=House3
+			Switch item=House3Switch
+		}
+		Frame label="House 4" {
+			Text item=House4
+			Switch item=House4Switch
+		}
+		Frame label="House 5" {
+			Text item=House5
+			Switch item=House5Switch
+		}
+		Frame label="House 6" {
+			Text item=House6
+			Switch item=House6Switch
+		}
+		Frame label="House 7" {
+			Text item=House7
+			Switch item=House7Switch
+		}
+		Frame label="House 8" {
+			Text item=House8
+			Switch item=House8Switch
+		}
+		Frame label="House 9" {
+			Text item=House9
+			Switch item=House9Switch
+		}
+		Frame label="House 10" {
+			Text item=House10
+			Switch item=House10Switch
+		}
+	}
+	Frame label="Date" {
+		Text item=Date
+	}
+}

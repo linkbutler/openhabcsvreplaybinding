@@ -1,0 +1,10 @@
+sitemap iot label="Main Menu"
+{
+	Frame label="Houses" {
+		Group item=gHouses2
+		}
+	}
+	Frame label="Date" {
+		Text item=Date
+	}
+}

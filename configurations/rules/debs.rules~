@@ -1,0 +1,19 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+
+var Number counter = 1
+var Timer timer = null
+
+/**
+ * The following rules help initializing the demo items with some helpful states.
+ */
+
+rule "Initialize value of Houses"
+when 
+	System started
+then
+	postUpdate(House1, "Initialized String 1")
+	postUpdate(House2, "Initialized String 2")
+end
+

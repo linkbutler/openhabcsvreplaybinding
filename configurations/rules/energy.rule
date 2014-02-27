@@ -1,0 +1,45 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+
+
+rule "Set random room consumption appliances"
+	when 
+		System started or
+		Time cron "0 0/5 * * * ?"
+	then
+		gAppliance?.members.forEach(appliance|
+			postUpdate(appliance, (Math::random * 1000.0).intValue )
+		)
+end
+
+rule "Set random room power meter"
+	when 
+		System started or
+		Time cron "0 0/5 * * * ?"
+	then
+		gPowerMeter?.members.forEach(appliance|
+			postUpdate(appliance, (Math::random * 10000.0).intValue )
+		)
+end
+
+rule "Set random power supplies"
+	when 
+		System started or
+		Time cron "0 0/5 * * * ?"
+	then
+		gPowerSupply?.members.forEach(pws|
+			postUpdate(pws, (Math::random * 10000.0).intValue )
+		)
+end
+
+
+rule "Set random power grid"
+	when 
+		System started or
+		Time cron "0 0/5 * * * ?"
+	then
+		gSmartGrid?.members.forEach(sg|
+			postUpdate(sg, (Math::random * 10000.0).intValue )
+		)
+end

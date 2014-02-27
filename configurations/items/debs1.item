@@ -1,0 +1,17 @@
+Group All
+Group gHouses2 	"Houses" <home>	(All)
+Group gMQTT2		(All)
+/*Group gSwitch		(All, gHouses)*/
+
+String House3 "House 3 [%s]" <house> (gHouses2) {mqtt=">[mqttbroker:/openHAB/1234/out/house3/state:state:*:default]"}
+
+Switch House3Switch "House3 Play" <contactless> (gHouses2) {csvReplay="/home/linhpham/house3.csv:House3:500"}
+
+String House4 "House 4 [%s]" <house> (gHouses2) {mqtt=">[mqttbroker:/openHAB/1234/out/house4/state:state:*:default]"}
+
+Switch House4Switch "House4 Play" <contactless> (gHouses2) {csvReplay="/home/linhpham/house4.csv:House4:500"}
+
+/*String House4MQTT (gMQTT2) {mqtt=">[mqttbroker:/openHAB/1234/out/house1/state:state:*:default]"}*/
+
+/* NTP binding demo item */
+DateTime		Date			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Paris:fr_FR" }

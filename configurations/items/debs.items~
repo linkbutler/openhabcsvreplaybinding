@@ -1,0 +1,55 @@
+Group All
+Group gHouses 	"Houses" <home>	(All)
+/*Group gHouse1 	"House 1" <home>	(gHouses)
+Group gHouse2 	"House 2" <home>	(gHouses)
+Group gHouse3 	"House 3" <home>	(gHouses)
+Group gHouse4 	"House 4" <home>	(gHouses)
+Group gHouse5 	"House 5" <home>	(gHouses)
+Group gHouse6 	"House 6" <home>	(gHouses)
+Group gHouse7 	"House 7" <home>	(gHouses)
+Group gHouse8 	"House 8" <home>	(gHouses)
+Group gHouse9 	"House 9" <home>	(gHouses)
+Group gHouse10 	"House 10" <home>	(gHouses)*/
+
+String House1 "House 1 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house1/state:state:*:default]"}
+
+Switch House1Switch "House1 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house1.csv:House1"}
+
+String House2 "House 2 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house2/state:state:*:default]"}
+
+Switch House2Switch "House2 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house2.csv:House2:500"}
+
+String House3 "House 3 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house3/state:state:*:default]"}
+
+Switch House3Switch "House3 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house3.csv:House3:500"}
+
+String House4 "House 4 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house4/state:state:*:default]"}
+
+Switch House4Switch "House4 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house4.csv:House4:500"}
+
+String House5 "House 5 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house5/state:state:*:default]"}
+
+Switch House5Switch "House5 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house5.csv:House5:500"}
+
+String House6 "House 6 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house6/state:state:*:default]"}
+
+Switch House6Switch "House6 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house6.csv:House6:500"}
+
+String House7 "House 7 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house7/state:state:*:default]"}
+
+Switch House7Switch "House7 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house7.csv:House7:500"}
+
+String House8 "House 8 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house8/state:state:*:default]"}
+
+Switch House8Switch "House8 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house8.csv:House8:500"}
+
+String House9 "House 9 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house9/state:state:*:default]"}
+
+Switch House9Switch "House9 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house9.csv:House9:500"}
+
+String House10 "House 10 [%s]" <house> (gHouses) {mqtt=">[mqttbroker:/openHAB/vm1/rabbitmq/house10/state:state:*:default]"}
+
+Switch House10Switch "House10 Play" <contactless> (gHouses) {csvReplay="/home/linhpham/house10.csv:House10:500"}
+
+/* NTP binding demo item */
+DateTime		Date			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Paris:fr_FR" }

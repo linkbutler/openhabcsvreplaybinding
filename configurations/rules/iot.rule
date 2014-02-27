@@ -1,0 +1,86 @@
+import org.openhab.core.library.types.*
+import org.openhab.core.persistence.*
+import org.openhab.model.script.actions.*
+
+var Number counter = 1
+var Timer timer = null
+
+/**
+ * The following rules help initializing the demo items with some helpful states.
+ */
+rule "Initialize light states"
+	when
+		System started
+	then
+		Lights?.members.forEach(light|
+			postUpdate(light, if(Math::random > 0.7) ON else OFF)
+		)
+end
+
+rule "Initialize heating states"
+	when 
+		System started
+	then
+		Heating?.members.forEach(heating|
+			postUpdate(heating, if(Math::random > 0.8) ON else OFF)
+		)
+end
+
+rule "Initialize contact states"
+	when 
+		System started
+	then
+		Windows?.members.forEach(window|
+			postUpdate(window, if(Math::random > 0.5) OPEN else CLOSED)
+		)
+end
+
+rule "Set random room temperatures"
+	when 
+		System started or
+		Time cron "0 0/3 * * * ?"
+	then
+		Temperature?.members.forEach(temperature|
+			postUpdate(temperature, 20.0 + (25.0 - (Math::random * 50.0).intValue) / 10.0)
+		)
+end
+
+rule "Set random room consumption appliances"
+	when 
+		System started or
+		Time cron "0 0/3 * * * ?"
+	then
+		Appliance?.members.forEach(appliance|
+			postUpdate(appliance, (Math::random * 1000.0).intValue )
+		)
+end
+
+rule "Update max and min temperatures"
+when
+	Item Temperature changed or
+	Time cron "0 0 0 * * ?" or
+	System started
+then	
+	postUpdate(Temp_Max, Temperature.maximumSince(now.toDateMidnight).state)
+	postUpdate(Temp_Min, Temperature.minimumSince(now.toDateMidnight).state)
+end
+
+rule "Set random MQTT Temperature"
+	when 
+		System started or
+		Time cron "0 0/1 * * * ?"
+	then
+		gMQTT?.members.forEach(mqtt|
+			postUpdate(mqtt, 20.0 + (25.0 - (Math::random * 50.0).intValue) / 10.0);
+			postUpdate(MQTTTempSender, mqtt.getState(StringType))
+			
+		)
+end
+
+/*rule "Send to MQTT Broker"
+when 
+	Item MQTTTemp changed
+then
+	postUpdate(MQTTTempSender, MQTTTemp.getState())
+end*/
+

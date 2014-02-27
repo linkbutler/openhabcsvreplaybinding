@@ -1,0 +1,67 @@
+Group All
+
+// Status Group
+Group gStatus 	(All)
+
+// Functional Groups
+Group  gEnergy			<energy> (All)
+Group  gAppliance 		<energy> (gEnergy)
+Group  gPowerMeter		<energy> (gEnergy)
+Group  gPowerSupply		<energy> (gEnergy)
+Group  gSmartGrid		<energy> (gEnergy)
+Group  gEPDU			<energy> (gEnergy)
+Group  gVentilation		<fan> 	 (gEnergy)
+
+Group  gMQTT		 	(All)
+
+// Floor and Room Groups 
+Group gGF 		(All)
+Group gFF 		(All)
+Group gC 		(All)
+
+Group GF_Living 	"Living Room" 	<video> 	(gGF)
+Group GF_Kitchen 	"Kitchen" 		<kitchen> 	(gGF)
+Group GF_Toilet 	"Toilet" 		<bath> 		(gGF)
+Group GF_Corridor 	"Corridor" 		<corridor> 	(gGF)
+
+Group FF_Bath 		"Bathroom" 		<bath> 		(gFF)
+Group FF_Office 	"Office" 		<office> 	(gFF)
+Group FF_Child 		"Child's Room" 	<boy1> 		(gFF)
+Group FF_Bed 		"Bedroom" 		<bedroom> 	(gFF)
+Group FF_Corridor 	"Corridor" 		<corridor> 	(gFF)
+
+// Active Group
+Group:Number:SUM 				Consumption	"Total Appliance Consumption [%.1f W]" 	<appliance>	(gStatus) {mqtt=">[mqttbroker:/openHAB/1234/out/ConsumptionTotal/state:state:*:default]"}
+Group:Number:SUM 				PowerSupply	"Total Power Supplying [%.1f W]" 	<electricity> (gStatus) {mqtt=">[mqttbroker:/openHAB/1234/out/PowerSupplyTotal/state:state:*:default]"}
+
+// Added MQTT
+Number MQTTCons "MQTT Consumption [%.1f W]" <appliance> (gMQTT) {mqtt=">[mqttbroker:/openHAB/1234/out/ConsumptionTotal/state:state:*:default]"}
+
+Switch MQTTSwitch "MQTT Switch" <light> (gMQTT) {mqtt=">[mqttbroker:/openHAB/1234/out/MQTTSwitch/state:command:ON:1],>[mqttbroker:/openHAB/1234/out/MQTTSwitch/state:command:OFF:0]"} 
+
+/* Power Meters */
+Number PowerMeter_Home 	"General Power Meter [%.1f Wpm]"	<powermeter>			(gPowerMeter)
+Number PowerMeter_FF 	"First Floor Power Meter [%.1f Wpm]"	<powermeter>		(gPowerMeter, gFF)
+Number PowerMeter_GF 	"Ground Floor Power Meter [%.1f Wpm]"	<powermeter>		(gPowerMeter, gGF)
+Number PowerMeter_C 	"Cellar Power Meter [%.1f Wpm]"	<powermeter>				(gPowerMeter, gC)
+
+/* Power Supplies */
+Number PWS_PowerGrid	 	"Power Grid Provider [%.1f Wpm]"				<electricity>	(gPowerSupply)
+Number PWS_SolarPanel	 	"Roof Solar Panel [%.1f Wpm]"			<sun>				(gPowerSupply)
+Number PWS_WindTurbine	 	"Garden Wind Turbine [%.1f Wpm]"					<windturbine>	(gPowerSupply)
+Number PWS_FuelCell		 	"Fuel Cell [%.1f Wpm]"			<fuelcell>			(gPowerSupply)
+Number PWS_FuelCell_H2Level	"Fuel Cell: H2 Level [%.1f]"	<fuelcell>			(gPowerSupply)
+
+/* Electric Appliances */
+Number Appliance_GF_Corridor 	"Appliance [%.1f W]"	<appliance>	(gAppliance, GF_Corridor)
+Number Appliance_GF_Toilet 	"Appliance [%.1f W]"	<appliance>	(gAppliance, GF_Toilet)
+Number Appliance_GF_Living 	"Appliance [%.1f W]"	<appliance>	(gAppliance, GF_Living)
+Number Appliance_GF_Kitchen 	"Appliance [%.1f W]"	<appliance>	(gAppliance, GF_Kitchen)
+Number Appliance_FF_Bath 		"Appliance [%.1f W]"	<appliance>	(gAppliance, FF_Bath)
+Number Appliance_FF_Office 	"Appliance [%.1f W]"	<appliance>	(gAppliance, FF_Office)
+Number Appliance_FF_Child 	"Appliance [%.1f W]"	<appliance>	(gAppliance, FF_Child)
+Number Appliance_FF_Bed 		"Appliance [%.1f W]"	<appliance>	(gAppliance, FF_Bed)
+
+
+/* NTP binding demo item */
+DateTime		Date			"Date [%1$tA, %1$td.%1$tm.%1$tY]"	<calendar>	{ ntp="Europe/Paris:fr_FR" }
