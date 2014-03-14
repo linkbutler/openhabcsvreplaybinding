@@ -9,8 +9,10 @@
 package org.openhab.binding.csvreplay;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.openhab.core.events.EventPublisher;
@@ -29,6 +31,7 @@ public class CSVReplayFile {
 
 	private static final Logger logger = LoggerFactory.getLogger(CSVReplayFile.class);
 
+	private String direction;
 	private String filePath;
 	private String stringItemName;
 	private String switchItemName;
@@ -45,13 +48,18 @@ public class CSVReplayFile {
     long relativeStartTime = 0;
     int accRatio = 1;
     BufferedReader br = null;
+    BufferedWriter bw = null;
 
 	private EventPublisher eventPublisher;
 
 	public CSVReplayFile(String filePath) {
 		this.filePath = filePath;
 	}
-
+	
+	void setDirection(String direction) {
+        this.direction = direction;
+	}
+	
     void setFilePath(String filePath) {
              this.filePath = filePath;
     }
@@ -91,7 +99,11 @@ public class CSVReplayFile {
 	public void setSleepTime(int sleepTime) {
 		this.sleepTime = sleepTime;
 	}
-
+	
+	public String getDirection() {
+		return direction;
+	}
+	
 	public String getFilePath() {
 		return filePath;
 	}
@@ -103,21 +115,47 @@ public class CSVReplayFile {
 	/**
 	 * Initialize this file and open the the file
 	 * 
-	 * @throws InitializationException if port can not be opened
+	 * @throws InitializationException if file can not be opened
 	 */
 	public void initialize() throws InitializationException {
-		try {
-            br = new BufferedReader(new FileReader(this.filePath));
-		} catch (FileNotFoundException e) {
-			throw new InitializationException(e);
+		File file = new File(this.filePath);
+		if (!file.exists() && ">".equals(direction)) {
+			System.out.println("File not exist! Creating it!");
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				logger.error("Cannot create new file '{}': {}", new String[] { filePath, e.getMessage() });
+			}
 		}
 	}
 	
 	protected void start() {
-		Thread thread1=null;
-		this.readFromFile(this.filePath, thread1);            
+		Thread reader=null;
+		this.readFromFile(this.filePath, reader);            
 	}
-
+	
+	protected String buildLine(String msg, long timeStamp) {
+		String line = "99999999,"+timeStamp+","+msg+",0,2,3,9";
+		return line;
+	}
+	
+	/**
+	 * Write a string to the file
+	 * 
+	 * @param msg the string to write
+	 */
+	public void writeToFile(String msg, long timeStamp) {
+		try {
+			FileWriter fw = new FileWriter(filePath, true);			// true means starting write from end of file
+			bw = new BufferedWriter(fw);
+			bw.append(buildLine(msg, timeStamp));
+			bw.append(System.getProperty("line.separator"));
+			bw.close();
+		} catch (IOException e) {
+			logger.error("Error writing '{}' to file {}: {}", new String[] { msg, filePath, e.getMessage() });
+		}
+	}
+	
 	public void readFromFile(final String f, Thread thread) {
 	    Runnable readRun = new Runnable() {
 	      public void run() {
@@ -197,9 +235,16 @@ public class CSVReplayFile {
             } catch (IOException e) {
             	logger.debug("Unexpected error while pause at " + lineAtStop + " & closing the file!");
             }
+		} else if (bw != null) {
+            try {  
+                bw.close();
+	        } catch (IOException e) {
+	        	logger.debug("Unexpected error while closing the file!");
+	        }
 		} else {
 			try {
-                br.close();
+				if (br == null) br.close();
+				if (bw == null) bw.close();
                 System.out.println(stringItemName + " stoped & closed the file!");
 			} catch (IOException e) {
         	logger.debug("Unexpected error while stop & closing the file!");

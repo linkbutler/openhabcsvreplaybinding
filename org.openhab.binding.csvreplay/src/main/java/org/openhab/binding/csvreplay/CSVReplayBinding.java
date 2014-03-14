@@ -16,8 +16,10 @@ import java.util.Set;
 import org.openhab.core.events.AbstractEventSubscriber;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.model.item.binding.BindingConfigParseException;
@@ -31,7 +33,7 @@ import org.openhab.model.item.binding.BindingConfigReader;
  *
  */
 public class CSVReplayBinding extends AbstractEventSubscriber implements BindingConfigReader {
-
+	
 	/** Store set of csv files */
 	private Map<String, CSVReplayFile> dbFiles = new HashMap<String, CSVReplayFile>();
 
@@ -72,6 +74,9 @@ public class CSVReplayBinding extends AbstractEventSubscriber implements Binding
 				else if (OnOffType.OFF.equals(command)) {
 					dbFile.close();
 				}
+			} else if(command instanceof StringType) {
+				long currentTime = System.currentTimeMillis();
+				dbFile.writeToFile(command.toString(), currentTime);
 			}
 		}
 	}
@@ -80,7 +85,7 @@ public class CSVReplayBinding extends AbstractEventSubscriber implements Binding
 	 * {@inheritDoc}
 	 */
 	public void receiveUpdate(String itemName, State newStatus) {
-		// ignore any updates
+		// skip any updates
 	}
 
 	/**
@@ -94,7 +99,7 @@ public class CSVReplayBinding extends AbstractEventSubscriber implements Binding
 	 * {@inheritDoc}
 	 */
 	public void validateItemType(Item item, String bindingConfig) throws BindingConfigParseException {
-		if (!(item instanceof SwitchItem)) {
+		if (!(item instanceof SwitchItem || item instanceof StringItem)) {
 			throw new BindingConfigParseException("item '" + item.getName()
 					+ "' is of type '" + item.getClass().getSimpleName()
 					+ "', only SwitchItems are allowed - please check your *.items configuration");
@@ -107,16 +112,19 @@ public class CSVReplayBinding extends AbstractEventSubscriber implements Binding
 	public void processBindingConfiguration(String context, Item item, String bindingConfig) throws BindingConfigParseException {
 		String paramsSplitBy = ":";
 		String[] params = bindingConfig.split(paramsSplitBy);
+		String direction = "<"; 	// "<" : default, read from file; ">" : write to file
+		if (params.length > 0) direction = params[0];
 		String filePath = "";
-		if (params.length > 0) filePath = params[0];
+		if (params.length > 1) filePath = params[1];
 		String stringItem = "";
-		if (params.length > 1)  stringItem = params[1];
+		if (params.length > 2 && "<".equals(direction))  stringItem = params[2];
 		int sleepTime = 500; // default sleep time in milliseconds
-		if (params.length > 2) sleepTime = Integer.parseInt(params[2]);
+		if (params.length > 3 && "<".equals(direction)) sleepTime = Integer.parseInt(params[3]);
 		CSVReplayFile dbFile = dbFiles.get(filePath);
 		if (dbFile == null) {
 			dbFile = new CSVReplayFile(filePath);
-			dbFile.setEventPublisher(eventPublisher);
+			dbFile.setDirection(direction);
+			if ("<".equals(direction)) dbFile.setEventPublisher(eventPublisher);
 			try {
 				dbFile.initialize();
 			} catch (InitializationException e) {
@@ -131,16 +139,24 @@ public class CSVReplayBinding extends AbstractEventSubscriber implements Binding
 			itemMap.put(item.getName(), filePath);
 			dbFiles.put(filePath, dbFile);
 		}
-		if (item instanceof SwitchItem) {
+		if (item instanceof SwitchItem) {	// in case of direction is "<"
 			if (dbFile.getSwitchItemName() == null) {
 				dbFile.setSwitchItemName(item.getName());
 				dbFile.setStringItemName(stringItem);
-				dbFile.setSleepTime(sleepTime);
+				if ("<".equals(direction)) dbFile.setSleepTime(sleepTime);
 			} else {
 				throw new BindingConfigParseException(
 						"There is already another SwitchItem assigned to the file "
 								+ filePath);
 			}
+		} else if (item instanceof StringItem) {	// in case of direction is ">"
+				if (dbFile.getStringItemName()== null) {
+					dbFile.setStringItemName(item.getName());
+				} else {
+					throw new BindingConfigParseException(
+							"There is already another StringItem assigned to the file "
+									+ filePath);
+				}
 		}
 		Set<String> itemNames = contextMap.get(context);
 		if (itemNames == null) {
